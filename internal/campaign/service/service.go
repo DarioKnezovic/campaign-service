@@ -20,3 +20,12 @@ func (s *CampaignService) FetchAllCampaigns(userId uint) ([]campaign.Campaign, e
 	campaigns, err := s.campaignRepository.GetAllCampaigns(userId)
 	return campaigns, err
 }
+
+func (s *CampaignService) CreateNewCampaign(newCampaign campaign.Campaign) (*campaign.Campaign, error) {
+	savedCampaign, err := s.campaignRepository.InsertNewCampaign(newCampaign)
+	if err != nil {
+		return nil, err
+	}
+
+	return savedCampaign, nil
+}

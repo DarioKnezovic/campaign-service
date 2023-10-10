@@ -6,7 +6,7 @@ import (
 
 // Campaign represents a campaign entity
 type Campaign struct {
-	CampaignID uint      `gorm:"primaryKey" json:"campaign_id"`
+	CampaignID uint      `gorm:"primaryKey;autoIncrement:true" json:"campaign_id"`
 	CustomerID uint      `gorm:"not null" json:"customer_id"`
 	Name       string    `gorm:"not null" json:"name"`
 	StartDate  time.Time `json:"start_date"`
@@ -17,4 +17,5 @@ type Campaign struct {
 
 type CampaignService interface {
 	FetchAllCampaigns(userId uint) ([]Campaign, error)
+	CreateNewCampaign(newCampaign Campaign) (*Campaign, error)
 }

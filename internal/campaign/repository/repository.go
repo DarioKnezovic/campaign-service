@@ -8,6 +8,7 @@ import (
 
 type CampaignRepository interface {
 	GetAllCampaigns(userId uint) ([]campaign.Campaign, error)
+	InsertNewCampaign(newCampaign campaign.Campaign) (*campaign.Campaign, error)
 }
 
 type campaignRepository struct {
@@ -31,4 +32,14 @@ func (c *campaignRepository) GetAllCampaigns(userId uint) ([]campaign.Campaign, 
 	}
 
 	return campaigns, nil
+}
+
+func (c *campaignRepository) InsertNewCampaign(newCampaign campaign.Campaign) (*campaign.Campaign, error) {
+
+	err := c.db.Create(&newCampaign).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return &newCampaign, nil
 }

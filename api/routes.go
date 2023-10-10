@@ -12,4 +12,5 @@ func RegisterRoutes(campaignService campaign.CampaignService) {
 	}
 
 	http.HandleFunc("/api/campaign/all", userHandler.GetAllCampaignsHandler)
+	http.HandleFunc("/api/campaign/create", userHandler.CreateNewCampaignHandler)
 }
