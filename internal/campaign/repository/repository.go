@@ -1,12 +1,13 @@
 package repository
 
 import (
+	"errors"
 	"github.com/DarioKnezovic/campaign-service/internal/campaign"
 	"gorm.io/gorm"
 )
 
 type CampaignRepository interface {
-	GetAllCampaigns() ([]campaign.Campaign, error)
+	GetAllCampaigns(userId uint) ([]campaign.Campaign, error)
 }
 
 type campaignRepository struct {
@@ -19,7 +20,15 @@ func NewCampaignRepository(db *gorm.DB) CampaignRepository {
 	}
 }
 
-func (c campaignRepository) GetAllCampaigns() ([]campaign.Campaign, error) {
-	//TODO implement me
-	panic("implement me")
+func (c *campaignRepository) GetAllCampaigns(userId uint) ([]campaign.Campaign, error) {
+	var campaigns []campaign.Campaign
+	err := c.db.Where("customer_id = ?", userId).Find(&campaigns).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return campaigns, nil
 }

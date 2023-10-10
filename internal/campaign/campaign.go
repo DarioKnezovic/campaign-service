@@ -16,5 +16,5 @@ type Campaign struct {
 }
 
 type CampaignService interface {
-	FetchAllCampaigns() ([]Campaign, error)
+	FetchAllCampaigns(userId uint) ([]Campaign, error)
 }

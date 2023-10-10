@@ -15,7 +15,8 @@ func NewCampaignService(campaignRepository repository.CampaignRepository) *Campa
 	}
 }
 
-func (s *CampaignService) FetchAllCampaigns() ([]campaign.Campaign, error) {
+func (s *CampaignService) FetchAllCampaigns(userId uint) ([]campaign.Campaign, error) {
 
-	return nil, nil
+	campaigns, err := s.campaignRepository.GetAllCampaigns(userId)
+	return campaigns, err
 }
