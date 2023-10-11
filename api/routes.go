@@ -3,14 +3,16 @@ package api
 import (
 	"github.com/DarioKnezovic/campaign-service/api/handlers"
 	"github.com/DarioKnezovic/campaign-service/internal/campaign"
-	"net/http"
+	"github.com/gorilla/mux"
 )
 
-func RegisterRoutes(campaignService campaign.CampaignService) {
+func RegisterRoutes(router *mux.Router, campaignService campaign.CampaignService) {
 	userHandler := &handlers.CampaignHandler{
 		CampaignService: campaignService,
 	}
 
-	http.HandleFunc("/api/campaign/all", userHandler.GetAllCampaignsHandler)
-	http.HandleFunc("/api/campaign/create", userHandler.CreateNewCampaignHandler)
+	// Define routes with parameters using "{parameter}" syntax
+	router.HandleFunc("/api/campaign/all", userHandler.GetAllCampaignsHandler).Methods("GET")
+	router.HandleFunc("/api/campaign/create", userHandler.CreateNewCampaignHandler).Methods("POST")
+	router.HandleFunc("/api/campaign/single/{id}", userHandler.GetSingleCampaignHandler).Methods("GET") // Add the HTTP method
 }

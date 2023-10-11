@@ -29,3 +29,9 @@ func (s *CampaignService) CreateNewCampaign(newCampaign campaign.Campaign) (*cam
 
 	return savedCampaign, nil
 }
+
+func (s *CampaignService) GetSingleCampaign(campaignId int) (campaign.Campaign, error) {
+
+	campaignReceived, err := s.campaignRepository.FetchCampaignById(campaignId)
+	return campaignReceived, err
+}

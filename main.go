@@ -1,3 +1,4 @@
+// main.go
 package main
 
 import (
@@ -7,6 +8,7 @@ import (
 	"github.com/DarioKnezovic/campaign-service/internal/campaign/repository"
 	"github.com/DarioKnezovic/campaign-service/internal/campaign/service"
 	"github.com/DarioKnezovic/campaign-service/pkg/database"
+	"github.com/gorilla/mux" // Import Gorilla Mux
 	"log"
 	"net/http"
 )
@@ -28,9 +30,12 @@ func main() {
 	campaignRepo := repository.NewCampaignRepository(db)
 	campaignService := service.NewCampaignService(campaignRepo)
 
-	api.RegisterRoutes(campaignService)
+	// Create a new Gorilla Mux router
+	router := mux.NewRouter()
+
+	// Register routes using Gorilla Mux
+	api.RegisterRoutes(router, campaignService)
 
 	log.Printf("Server listening on port %s", cfg.APIPort)
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", cfg.APIPort), nil))
-
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", cfg.APIPort), router))
 }
