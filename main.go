@@ -8,7 +8,7 @@ import (
 	"github.com/DarioKnezovic/campaign-service/internal/campaign/repository"
 	"github.com/DarioKnezovic/campaign-service/internal/campaign/service"
 	"github.com/DarioKnezovic/campaign-service/pkg/database"
-	"github.com/gorilla/mux" // Import Gorilla Mux
+	"github.com/gorilla/mux"
 	"log"
 	"net/http"
 )
