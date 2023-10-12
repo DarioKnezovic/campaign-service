@@ -95,3 +95,40 @@ func (h *CampaignHandler) GetSingleCampaignHandler(w http.ResponseWriter, r *htt
 
 	util.SendJSONResponse(w, http.StatusOK, receivedCampaign)
 }
+
+func (h *CampaignHandler) UpdateCampaignHandler(w http.ResponseWriter, r *http.Request) {
+	var campaignUpdate campaign.Campaign
+
+	id, err := strconv.Atoi(mux.Vars(r)["id"])
+	if err != nil {
+		// TODO: add response body
+		util.SendJSONResponse(w, http.StatusInternalServerError, nil)
+		return
+	}
+
+	err = json.NewDecoder(r.Body).Decode(&campaignUpdate)
+	if err != nil {
+		log.Print(err)
+		util.SendJSONResponse(w, http.StatusBadRequest, nil)
+		return
+	}
+
+	userId, err := util.GetUserIdFromToken(r)
+	if err != nil {
+		log.Printf("Error during getting user id from token")
+		responseError := map[string]string{
+			"error": err.Error(),
+		}
+		util.SendJSONResponse(w, http.StatusInternalServerError, responseError)
+		return
+	}
+
+	err = h.CampaignService.UpdateCampaign(campaignUpdate, id, userId)
+	if err != nil {
+		// TODO: add response body
+		util.SendJSONResponse(w, http.StatusInternalServerError, nil)
+		return
+	}
+
+	util.SendJSONResponse(w, http.StatusOK, nil)
+}

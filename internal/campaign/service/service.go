@@ -35,3 +35,7 @@ func (s *CampaignService) GetSingleCampaign(campaignId int, userId uint) (campai
 	campaignReceived, err := s.campaignRepository.FetchCampaignById(campaignId, userId)
 	return campaignReceived, err
 }
+
+func (s *CampaignService) UpdateCampaign(campaignUpdatePayload campaign.Campaign, campaignId int, userId uint) error {
+	return s.campaignRepository.UpdateCampaignById(campaignUpdatePayload, campaignId, userId)
+}

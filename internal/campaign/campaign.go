@@ -19,4 +19,5 @@ type CampaignService interface {
 	FetchAllCampaigns(userId uint) ([]Campaign, error)
 	CreateNewCampaign(newCampaign Campaign) (*Campaign, error)
 	GetSingleCampaign(campaignId int, userId uint) (Campaign, error)
+	UpdateCampaign(campaignUpdatePayload Campaign, campaignId int, userId uint) error
 }

@@ -10,6 +10,7 @@ type CampaignRepository interface {
 	GetAllCampaigns(userId uint) ([]campaign.Campaign, error)
 	InsertNewCampaign(newCampaign campaign.Campaign) (*campaign.Campaign, error)
 	FetchCampaignById(campaignId int, userId uint) (campaign.Campaign, error)
+	UpdateCampaignById(updatedCampaign campaign.Campaign, campaignId int, userId uint) error
 }
 
 type campaignRepository struct {
@@ -56,4 +57,17 @@ func (c *campaignRepository) FetchCampaignById(campaignId int, userId uint) (cam
 	}
 
 	return foundedCampaign, nil
+}
+
+func (c *campaignRepository) UpdateCampaignById(updatedCampaign campaign.Campaign, campaignId int, userId uint) error {
+	existingCampaign, err := c.FetchCampaignById(campaignId, userId)
+	if err != nil {
+		return err
+	}
+
+	existingCampaign.Name = updatedCampaign.Name
+	existingCampaign.StartDate = updatedCampaign.StartDate
+	existingCampaign.EndDate = updatedCampaign.EndDate
+
+	return c.db.Where("campaign_id = ?", campaignId).Where("customer_id = ?", userId).Save(&existingCampaign).Error
 }
