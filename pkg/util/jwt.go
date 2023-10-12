@@ -1,8 +1,13 @@
 package util
 
 import (
+	"errors"
 	"fmt"
+	"github.com/DarioKnezovic/campaign-service/config"
 	"github.com/dgrijalva/jwt-go"
+	"log"
+	"net/http"
+	"strings"
 	"time"
 )
 
@@ -31,4 +36,28 @@ func VerifyJWT(tokenString string, secretKey []byte) (*Claims, error) {
 	}
 
 	return claims, nil
+}
+
+func GetUserIdFromToken(r *http.Request) (uint, error) {
+	token := strings.Split(r.Header.Get("Authorization"), " ")
+	cfg := config.LoadConfig()
+
+	if len(token) != 2 {
+		return 0, errors.New("Invalid Authorization header")
+	}
+
+	// TODO: In the future add GRPC call to User service to check token
+	claims, err := VerifyJWT(token[1], []byte(cfg.JWTSecretKey))
+	if err != nil {
+		log.Printf("Error during verifying JWT: %v", err)
+		return 0, errors.New("Error during verifying JWT")
+	}
+
+	userId := claims.Id
+	if userId == 0 {
+		log.Print("User ID is not available from JWT token")
+		return 0, errors.New("Undefined User ID from Authorization token")
+	}
+
+	return userId, nil
 }

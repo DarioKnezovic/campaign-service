@@ -9,7 +9,7 @@ import (
 type CampaignRepository interface {
 	GetAllCampaigns(userId uint) ([]campaign.Campaign, error)
 	InsertNewCampaign(newCampaign campaign.Campaign) (*campaign.Campaign, error)
-	FetchCampaignById(campaignId int) (campaign.Campaign, error)
+	FetchCampaignById(campaignId int, userId uint) (campaign.Campaign, error)
 }
 
 type campaignRepository struct {
@@ -45,9 +45,9 @@ func (c *campaignRepository) InsertNewCampaign(newCampaign campaign.Campaign) (*
 	return &newCampaign, nil
 }
 
-func (c *campaignRepository) FetchCampaignById(campaignId int) (campaign.Campaign, error) {
+func (c *campaignRepository) FetchCampaignById(campaignId int, userId uint) (campaign.Campaign, error) {
 	var foundedCampaign campaign.Campaign
-	err := c.db.Where("campaign_id = ?", campaignId).Find(&foundedCampaign).Error
+	err := c.db.Where("campaign_id = ?", campaignId).Where("customer_id = ?", userId).Find(&foundedCampaign).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return campaign.Campaign{}, nil
