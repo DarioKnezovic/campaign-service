@@ -4,6 +4,7 @@ package main
 import (
 	"fmt"
 	"github.com/DarioKnezovic/campaign-service/api"
+	"github.com/DarioKnezovic/campaign-service/api/middleware"
 	"github.com/DarioKnezovic/campaign-service/config"
 	"github.com/DarioKnezovic/campaign-service/internal/campaign/repository"
 	"github.com/DarioKnezovic/campaign-service/internal/campaign/service"
@@ -32,6 +33,9 @@ func main() {
 
 	// Create a new Gorilla Mux router
 	router := mux.NewRouter()
+
+	// Implement logging middleware
+	router.Use(middleware.LoggingMiddleware)
 
 	// Register routes using Gorilla Mux
 	api.RegisterRoutes(router, campaignService)
