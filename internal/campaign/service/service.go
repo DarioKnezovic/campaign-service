@@ -39,3 +39,12 @@ func (s *CampaignService) GetSingleCampaign(campaignId int, userId uint) (campai
 func (s *CampaignService) UpdateCampaign(campaignUpdatePayload campaign.Campaign, campaignId int, userId uint) error {
 	return s.campaignRepository.UpdateCampaignById(campaignUpdatePayload, campaignId, userId)
 }
+
+func (s *CampaignService) DeleteCampaign(campaignId int) error {
+	selectedCampaign, err := s.campaignRepository.FetchCampaignById(campaignId, 0)
+	if err != nil {
+		return err
+	}
+
+	return s.campaignRepository.DeleteCampaignById(selectedCampaign)
+}

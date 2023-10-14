@@ -20,4 +20,5 @@ type CampaignService interface {
 	CreateNewCampaign(newCampaign Campaign) (*Campaign, error)
 	GetSingleCampaign(campaignId int, userId uint) (Campaign, error)
 	UpdateCampaign(campaignUpdatePayload Campaign, campaignId int, userId uint) error
+	DeleteCampaign(campaignId int) error
 }

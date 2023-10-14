@@ -52,16 +52,16 @@ func (h *CampaignHandler) CreateNewCampaignHandler(w http.ResponseWriter, r *htt
 
 	err = json.NewDecoder(r.Body).Decode(&newCampaign)
 	if err != nil {
-		// TODO: add response body
-		util.SendJSONResponse(w, http.StatusBadRequest, nil)
+		log.Print(err)
+		util.SendJSONResponse(w, http.StatusBadRequest, util.ResponseMessages[400])
 		return
 	}
 
 	newCampaign.CustomerID = userId
 	savedCampaign, err := h.CampaignService.CreateNewCampaign(newCampaign)
 	if err != nil {
-		// TODO: add response body
-		util.SendJSONResponse(w, http.StatusInternalServerError, nil)
+		log.Printf("Error during creating new campaign: %e", err)
+		util.SendJSONResponse(w, http.StatusInternalServerError, util.ResponseMessages[500])
 		return
 	}
 
@@ -71,14 +71,13 @@ func (h *CampaignHandler) CreateNewCampaignHandler(w http.ResponseWriter, r *htt
 func (h *CampaignHandler) GetSingleCampaignHandler(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(mux.Vars(r)["id"])
 	if err != nil {
-		// TODO: add response body
-		util.SendJSONResponse(w, http.StatusInternalServerError, nil)
+		util.SendJSONResponse(w, http.StatusInternalServerError, util.ResponseMessages[600])
 		return
 	}
 
 	userId, err := util.GetUserIdFromToken(r)
 	if err != nil {
-		log.Printf("Error during getting user id from token")
+		log.Printf("Error during getting user id from token: %e", err)
 		responseError := map[string]string{
 			"error": err.Error(),
 		}
@@ -88,8 +87,8 @@ func (h *CampaignHandler) GetSingleCampaignHandler(w http.ResponseWriter, r *htt
 
 	receivedCampaign, err := h.CampaignService.GetSingleCampaign(id, userId)
 	if err != nil {
-		// TODO: add response body
-		util.SendJSONResponse(w, http.StatusInternalServerError, nil)
+		log.Printf("Error during getting single campaign: %e", err)
+		util.SendJSONResponse(w, http.StatusInternalServerError, util.ResponseMessages[500])
 		return
 	}
 
@@ -101,21 +100,20 @@ func (h *CampaignHandler) UpdateCampaignHandler(w http.ResponseWriter, r *http.R
 
 	id, err := strconv.Atoi(mux.Vars(r)["id"])
 	if err != nil {
-		// TODO: add response body
-		util.SendJSONResponse(w, http.StatusInternalServerError, nil)
+		util.SendJSONResponse(w, http.StatusInternalServerError, util.ResponseMessages[600])
 		return
 	}
 
 	err = json.NewDecoder(r.Body).Decode(&campaignUpdate)
 	if err != nil {
 		log.Print(err)
-		util.SendJSONResponse(w, http.StatusBadRequest, nil)
+		util.SendJSONResponse(w, http.StatusBadRequest, util.ResponseMessages[400])
 		return
 	}
 
 	userId, err := util.GetUserIdFromToken(r)
 	if err != nil {
-		log.Printf("Error during getting user id from token")
+		log.Printf("Error during getting user id from token: %e", err)
 		responseError := map[string]string{
 			"error": err.Error(),
 		}
@@ -125,10 +123,27 @@ func (h *CampaignHandler) UpdateCampaignHandler(w http.ResponseWriter, r *http.R
 
 	err = h.CampaignService.UpdateCampaign(campaignUpdate, id, userId)
 	if err != nil {
-		// TODO: add response body
-		util.SendJSONResponse(w, http.StatusInternalServerError, nil)
+		log.Printf("Error during updating campaign %d: %e", id, err)
+		util.SendJSONResponse(w, http.StatusInternalServerError, util.ResponseMessages[500])
 		return
 	}
 
-	util.SendJSONResponse(w, http.StatusOK, nil)
+	util.SendJSONResponse(w, http.StatusOK, util.ResponseMessages[200])
+}
+
+func (h *CampaignHandler) DeleteCampaignHandler(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(mux.Vars(r)["id"])
+	if err != nil {
+		util.SendJSONResponse(w, http.StatusInternalServerError, util.ResponseMessages[600])
+		return
+	}
+
+	err = h.CampaignService.DeleteCampaign(id)
+	if err != nil {
+		log.Printf("Error during deleting campaign %d: %e", id, err)
+		util.SendJSONResponse(w, http.StatusInternalServerError, util.ResponseMessages[500])
+		return
+	}
+
+	util.SendJSONResponse(w, http.StatusOK, util.ResponseMessages[200])
 }

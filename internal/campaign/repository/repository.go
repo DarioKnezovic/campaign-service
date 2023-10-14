@@ -11,6 +11,7 @@ type CampaignRepository interface {
 	InsertNewCampaign(newCampaign campaign.Campaign) (*campaign.Campaign, error)
 	FetchCampaignById(campaignId int, userId uint) (campaign.Campaign, error)
 	UpdateCampaignById(updatedCampaign campaign.Campaign, campaignId int, userId uint) error
+	DeleteCampaignById(campaignToDelete campaign.Campaign) error
 }
 
 type campaignRepository struct {
@@ -48,11 +49,18 @@ func (c *campaignRepository) InsertNewCampaign(newCampaign campaign.Campaign) (*
 
 func (c *campaignRepository) FetchCampaignById(campaignId int, userId uint) (campaign.Campaign, error) {
 	var foundedCampaign campaign.Campaign
-	err := c.db.Where("campaign_id = ?", campaignId).Where("customer_id = ?", userId).Find(&foundedCampaign).Error
+	query := c.db.Where("campaign_id = ?", campaignId)
+
+	/*
+		When user is ADMIN role then we do not need to search by `userId`
+		TODO: This needs to be implemented on whole CRUD functions
+	*/
+	if userId != 0 {
+		query = query.Where("customer_id = ?", userId)
+	}
+
+	err := query.Find(&foundedCampaign).Error
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return campaign.Campaign{}, nil
-		}
 		return campaign.Campaign{}, err
 	}
 
@@ -70,4 +78,8 @@ func (c *campaignRepository) UpdateCampaignById(updatedCampaign campaign.Campaig
 	existingCampaign.EndDate = updatedCampaign.EndDate
 
 	return c.db.Where("campaign_id = ?", campaignId).Where("customer_id = ?", userId).Save(&existingCampaign).Error
+}
+
+func (c *campaignRepository) DeleteCampaignById(campaignToDelete campaign.Campaign) error {
+	return c.db.Delete(&campaignToDelete).Error
 }
