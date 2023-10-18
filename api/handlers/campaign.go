@@ -147,3 +147,20 @@ func (h *CampaignHandler) DeleteCampaignHandler(w http.ResponseWriter, r *http.R
 
 	util.SendJSONResponse(w, http.StatusOK, util.ResponseMessages[200])
 }
+
+func (h *CampaignHandler) GetUserCampaignsHandler(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(mux.Vars(r)["id"])
+	if err != nil {
+		util.SendJSONResponse(w, http.StatusInternalServerError, util.ResponseMessages[600])
+		return
+	}
+
+	campaigns, err := h.CampaignService.FetchAllCampaigns(uint(id))
+	if err != nil {
+		log.Printf("Error during fetching user's campaign %d: %e", id, err)
+		util.SendJSONResponse(w, http.StatusInternalServerError, util.ResponseMessages[500])
+		return
+	}
+
+	util.SendJSONResponse(w, http.StatusOK, campaigns)
+}

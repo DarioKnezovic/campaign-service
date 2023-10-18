@@ -17,4 +17,5 @@ func RegisterRoutes(router *mux.Router, campaignService campaign.CampaignService
 	router.HandleFunc("/api/campaign/single/{id}", userHandler.GetSingleCampaignHandler).Methods("GET")
 	router.HandleFunc("/api/campaign/update/{id}", userHandler.UpdateCampaignHandler).Methods("PUT")
 	router.HandleFunc("/api/campaign/delete/{id}", userHandler.DeleteCampaignHandler).Methods("DELETE")
+	router.HandleFunc("/api/user/{id}/campaigns", userHandler.GetUserCampaignsHandler).Methods("GET")
 }
