@@ -3,6 +3,7 @@ package service
 import (
 	"github.com/DarioKnezovic/campaign-service/internal/campaign"
 	"github.com/DarioKnezovic/campaign-service/internal/campaign/repository"
+	"log"
 )
 
 type CampaignService struct {
@@ -47,4 +48,20 @@ func (s *CampaignService) DeleteCampaign(campaignId int) error {
 	}
 
 	return s.campaignRepository.DeleteCampaignById(selectedCampaign)
+}
+
+func (s *CampaignService) InitCampaign(customerKey string) (campaign.Campaign, error) {
+	userId, err := s.campaignRepository.FindUserUsingCustomerKey(customerKey)
+	if err != nil {
+		return campaign.Campaign{}, err
+	}
+
+	log.Println("Fetch campaign for customer_id=", userId)
+
+	fetchedCampaign, err := s.campaignRepository.FindCampaignByCustomerID(userId)
+	if err != nil {
+		return campaign.Campaign{}, err
+	}
+
+	return fetchedCampaign, nil
 }

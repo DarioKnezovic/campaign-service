@@ -164,3 +164,30 @@ func (h *CampaignHandler) GetUserCampaignsHandler(w http.ResponseWriter, r *http
 
 	util.SendJSONResponse(w, http.StatusOK, campaigns)
 }
+
+func (h *CampaignHandler) CampaignInitHandler(w http.ResponseWriter, r *http.Request) {
+	customerKey, exists := mux.Vars(r)["customerKey"]
+	if !exists {
+		util.SendJSONResponse(w, http.StatusBadRequest, map[string]string{
+			"error": util.ResponseMessages[400],
+		})
+		return
+	}
+
+	fetchedCampaign, err := h.CampaignService.InitCampaign(customerKey)
+	if err != nil {
+		log.Print("Error during campaign initialization: ", err)
+		if err.Error() == "record not found" {
+			util.SendJSONResponse(w, http.StatusNotFound, map[string]string{
+				"error": util.ResponseMessages[404],
+			})
+			return
+		}
+		util.SendJSONResponse(w, http.StatusInternalServerError, map[string]string{
+			"error": util.ResponseMessages[500],
+		})
+		return
+	}
+
+	util.SendJSONResponse(w, http.StatusOK, fetchedCampaign)
+}

@@ -11,6 +11,9 @@ func RegisterRoutes(router *mux.Router, campaignService campaign.CampaignService
 		CampaignService: campaignService,
 	}
 
+	// Init route for AdBlocker detection
+	router.HandleFunc("/api/campaign/init/{customerKey}", userHandler.CampaignInitHandler).Methods("GET")
+
 	// Define routes with parameters using "{parameter}" syntax
 	router.HandleFunc("/api/campaign/all", userHandler.GetAllCampaignsHandler).Methods("GET")
 	router.HandleFunc("/api/campaign/create", userHandler.CreateNewCampaignHandler).Methods("POST")

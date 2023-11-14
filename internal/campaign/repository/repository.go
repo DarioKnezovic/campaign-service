@@ -12,6 +12,8 @@ type CampaignRepository interface {
 	FetchCampaignById(campaignId int, userId uint) (campaign.Campaign, error)
 	UpdateCampaignById(updatedCampaign campaign.Campaign, campaignId int, userId uint) error
 	DeleteCampaignById(campaignToDelete campaign.Campaign) error
+	FindUserUsingCustomerKey(customerKey string) (uint, error)
+	FindCampaignByCustomerID(customerId uint) (campaign.Campaign, error)
 }
 
 type campaignRepository struct {
@@ -82,4 +84,26 @@ func (c *campaignRepository) UpdateCampaignById(updatedCampaign campaign.Campaig
 
 func (c *campaignRepository) DeleteCampaignById(campaignToDelete campaign.Campaign) error {
 	return c.db.Delete(&campaignToDelete).Error
+}
+
+func (c *campaignRepository) FindUserUsingCustomerKey(customerKey string) (uint, error) {
+	var foundedUser campaign.User
+
+	query := c.db.Where("customer_key = ?", customerKey)
+
+	err := query.Find(&foundedUser).Error
+	if err != nil {
+		return 0, err
+	}
+
+	return foundedUser.ID, nil
+}
+
+func (c *campaignRepository) FindCampaignByCustomerID(customerId uint) (campaign.Campaign, error) {
+	var foundedCampaign campaign.Campaign
+	err := c.db.Where("customer_id = ?", customerId).First(&foundedCampaign).Error
+	if err != nil {
+		return campaign.Campaign{}, err
+	}
+	return foundedCampaign, nil
 }
